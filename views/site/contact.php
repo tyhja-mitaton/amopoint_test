@@ -8,9 +8,16 @@ use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 use yii\captcha\Captcha;
 
-$this->title = 'Contact';
+$this->title = 'Statistics';
 $this->params['breadcrumbs'][] = $this->title;
 $ipfyToken = Yii::$app->params['ipfy-token'];
+
+$uniqueIpByHourArray = \app\models\Geo::countUniqueIpByHour();
+$uniqueIpCounters = json_encode(array_keys($uniqueIpByHourArray));
+$hours = json_encode(array_values($uniqueIpByHourArray));
+$uniqueCityData = \app\models\Geo::uniqueCityData();
+$uniqueCityCounters = json_encode(array_keys($uniqueCityData));
+$uniqueCities = json_encode(array_values($uniqueCityData));
 ?>
 <div class="site-contact">
     <h1><?= Html::encode($this->title) ?></h1>
@@ -55,9 +62,10 @@ function delCookie(name) {
 }
 
 if (getCookie("counter")) {
-  var count=getCookie("counter")+1;
+  var count=parseInt(getCookie("counter"))+1;
   setCookie("counter",count,365);
-  fetch('https://api.ipify.org?format=json')
+} else {
+    fetch('https://api.ipify.org?format=json')
     .then(response => response.json())
     .then(data => {
         console.log(data.ip);
@@ -70,14 +78,17 @@ if (getCookie("counter")) {
             let device = navigator.userAgent;
             $.ajax({
             type: "GET",
-            url: '/site/create-geo?ip=' + ip + '&city=' + city + '&device=' + device
+            url: '/site/create-geo?ip=' + ip + '&city=' + city + '&device=' + device,
+            success: function(res) {
+              console.log('success', res);
+            }
         });
         })
     })
     .catch(error => {
         console.log('Error:', error);
     });
-} else {
+    
   setCookie("counter",1,365);
 }
 
@@ -86,8 +97,8 @@ console.log("Вы зашли на эту страницу "+getCookie("counter")
 var areaChart = document.querySelector('#chart'),
 areaChartConfig = {
     series: [{
-            name: "Desktops",
-            data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+            name: "Hours",
+            data: $hours
         }],
           chart: {
           height: 350,
@@ -103,7 +114,7 @@ areaChartConfig = {
           curve: 'straight'
         },
         title: {
-          text: 'Product Trends by Month',
+          text: 'Unique visitors by Hour',
           align: 'left'
         },
         grid: {
@@ -113,13 +124,16 @@ areaChartConfig = {
           },
         },
         xaxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
+        title: {
+            text: 'Unique visitors'
+        },
+          categories: $uniqueIpCounters
         }
 };
 var pieChart = document.querySelector('#pie-chart'),
 pieChartConfig = {
-    series: [44, 55, 13, 33],
-    labels: ['Apple', 'Mango', 'Orange', 'Watermelon'],
+    series: $uniqueCityCounters,
+    labels: $uniqueCities,
     chart: {
           width: 380,
           type: 'pie'

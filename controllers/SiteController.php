@@ -23,10 +23,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'contact'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'contact'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -143,6 +143,8 @@ class SiteController extends Controller
         $geo->ip = $ip;
         $geo->city = $city;
         $geo->device = $device;
+        $geo->date = time();
+        $geo->hour = (int)date('H', time());
         return $geo->save();
     }
 }

@@ -6,8 +6,8 @@ $(function () {
     switchFields($('select[name="type_val"]').val());
 });
 function switchFields(value) {
-    $('input[type="text"]:not([name="input_' + value + '"])').hide();
-    $('input[type="text"]:not([name="input_' + value + '"])').closest('p').hide();
-    $('input[type="text"][name="input_' + value + '"]').show();
-    $('input[type="text"][name="input_' + value + '"]').closest('p').show();
+    $('.site-about input[type="text"]:not([name="input_' + value + '"])').hide();
+    $('.site-about input[type="text"]:not([name="input_' + value + '"])').closest('p').hide();
+    $('.site-about input[type="text"][name="input_' + value + '"]').show();
+    $('.site-about input[type="text"][name="input_' + value + '"]').closest('p').show();
 }
